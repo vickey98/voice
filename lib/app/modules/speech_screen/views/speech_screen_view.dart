@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:highlight_text/highlight_text.dart';
-import 'package:speech_to_text/speech_recognition_event.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:voice_app/widgets/ripple/ripple_animation.dart';
@@ -33,22 +32,28 @@ class _SpeechScreenState extends State<SpeechScreen> {
       onTap: () {
         debugPrint("Test");
       },
-      textStyle:
-          TextStyle(color: Colors.blue.shade200, fontWeight: FontWeight.bold),
+      textStyle: TextStyle(
+          color: Colors.blue.shade200,
+          fontWeight: FontWeight.bold,
+          fontSize: 32),
     ),
     "Indigital": HighlightedWord(
       onTap: () {
         debugPrint("Indigital");
       },
-      textStyle:
-          TextStyle(color: Colors.purple.shade200, fontWeight: FontWeight.bold),
+      textStyle: TextStyle(
+          color: Colors.purple.shade200,
+          fontWeight: FontWeight.bold,
+          fontSize: 32),
     ),
     "Company": HighlightedWord(
       onTap: () {
         debugPrint("Company");
       },
-      textStyle:
-          TextStyle(color: Colors.green.shade200, fontWeight: FontWeight.bold),
+      textStyle: TextStyle(
+          color: Colors.green.shade200,
+          fontWeight: FontWeight.bold,
+          fontSize: 32),
     ),
   };
 
