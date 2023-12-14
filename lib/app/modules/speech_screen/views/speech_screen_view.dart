@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -16,6 +17,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
   bool _isListening = false;
   String _text = "Press the button and start speaking";
   double _confidence = 1.0;
+  late final Future<List<stt.LocaleName>> locales;
+  String lang = 'en-IN';
 
   @override
   void initState() {
@@ -25,6 +28,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
 
   void _initSpeechState() {
     _speech = stt.SpeechToText();
+    locales = _speech.locales();
   }
 
   final Map<String, HighlightedWord> _words = {
@@ -76,12 +80,36 @@ class _SpeechScreenState extends State<SpeechScreen> {
         reverse: true,
         child: Container(
           padding: const EdgeInsets.fromLTRB(30, 30, 30, 150),
-          child: TextHighlight(
-            text: _text,
-            words: _words,
-            textStyle: const TextStyle(
-                fontSize: 32, color: Colors.black, fontWeight: FontWeight.w400),
-          ),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            TextHighlight(
+              text: _text,
+              words: _words,
+              textStyle: const TextStyle(
+                  fontSize: 32,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w400),
+            ),
+            const SizedBox(height: 20),
+            const Text('Lang :'),
+            DropdownButton(
+              isExpanded: true,
+              value: lang,
+              items: ['en-IN', 'ja-JP', 'en-US']
+                  .map(
+                    (String lang) => DropdownMenuItem(
+                      value: lang,
+                      child: Text(lang),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (String? language) {
+                if (language != null) {
+                  setState(() => lang = language);
+                }
+              },
+            ),
+          ]),
         ),
       ),
     );
@@ -98,6 +126,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
         // If speech initialization was successful, start listening
         if (available) {
           _speech.listen(
+            localeId: lang,
             onResult: _onSpeechResult,
           );
           setState(() => _isListening = true);
