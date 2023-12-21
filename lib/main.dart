@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Voice',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          // visualDensity: VisualDensity.adaptivePlatformDensity,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
           primarySwatch: Colors.deepPurple),
       home: const SpeechScreen(),
     );
