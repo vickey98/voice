@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:voice_app/app/data/api/service/api_service.dart';
 import 'package:voice_app/app/modules/speech_screen/views/speech_screen_view.dart';
 
-void main() {
+void main() async {
+  await initService();
   runApp(const MyApp());
+}
+
+initService() async {
+  await Get.putAsync(() => ApiService().init());
 }
 
 class MyApp extends StatelessWidget {
@@ -10,7 +17,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Voice',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

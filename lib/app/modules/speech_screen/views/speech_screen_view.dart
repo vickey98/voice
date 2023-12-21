@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:voice_app/app/data/api/service/api_service.dart';
+import 'package:voice_app/app/data/model/katakana_request_model.dart';
 import 'package:voice_app/widgets/ripple/ripple_animation.dart';
 
 class SpeechScreen extends StatefulWidget {
@@ -12,6 +15,7 @@ class SpeechScreen extends StatefulWidget {
 }
 
 class _SpeechScreenState extends State<SpeechScreen> {
+  ApiService api = Get.find();
   late stt.SpeechToText _speech;
   bool _isListening = false;
   String _text = "Press the button and start speaking";
@@ -28,6 +32,20 @@ class _SpeechScreenState extends State<SpeechScreen> {
   void _initSpeechState() {
     _speech = stt.SpeechToText();
     locales = _speech.locales();
+  }
+
+  getkatakanaText(String text) {
+    KatakanaRequestModel requestModel = getRequestModel(text);
+    api.getKatakanaText(requestModel: requestModel).then((res) {
+      setState(() {
+        _text = res.converted;
+      });
+      print("After conversion: ${res.converted}");
+    });
+  }
+
+  KatakanaRequestModel getRequestModel(String text) {
+    return KatakanaRequestModel(sentence: text, outputType: "katakana");
   }
 
   final Map<String, HighlightedWord> _words = {
@@ -76,6 +94,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
           onLongPressEnd: (_) => _stopListening(),
           child: CircleAvatar(
             radius: 30,
+            backgroundColor: Colors.deepPurple,
             child: Icon(_isListening ? Icons.mic : Icons.mic_none,
                 size: 30, color: Colors.white),
           ),
@@ -144,9 +163,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
+    getkatakanaText(result.recognizedWords);
     setState(() {
-      _text = result.recognizedWords;
-
       if (result.hasConfidenceRating && result.confidence > 0) {
         _confidence = result.confidence;
       }
