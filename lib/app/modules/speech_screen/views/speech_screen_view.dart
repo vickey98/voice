@@ -35,7 +35,6 @@ class _SpeechScreenState extends State<SpeechScreen> {
   }
 
   getkatakanaText(String text) {
-    print("Before conversion: $text");
     KatakanaRequestModel requestModel = getRequestModel(text);
     api.getKatakanaText(requestModel: requestModel).then((res) {
       setState(() {

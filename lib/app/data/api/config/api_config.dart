@@ -9,7 +9,7 @@ import '../api_util.dart';
 
 class ApiConfig {
   static const String baseUrl =
-      "http://localhost:8080/api/";
+      "https://voice-backend-production.up.railway.app/api/";
 
   static final ApiConfig _instance = ApiConfig._internal();
 
@@ -79,15 +79,17 @@ class ApiConfig {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi) {
-      log('\n\n**********  post request START :  $baseUrl$path  **********\n');
-      log('postRequestBody : $body');
-      log('postRequestHeader : $_headers');
+
+      print('\n\n**********  post request START :  $baseUrl$path  **********\n');
+      print('postRequestBody : $body');
+      print('postRequestHeader : $_headers');
       late http.Response res;
       try {
         res = await http.post(Uri.parse(_baseUrl + path),
             body: jsonEncode(body), headers: _headers);
-        log('postRequestStatusCode : ${res.statusCode}');
+        print('postRequestStatusCode : ${res.statusCode}');
       } catch (e) {
+        print(e);
         return http.Response(
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
@@ -105,7 +107,7 @@ class ApiConfig {
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
         },
-        json.encode({'status': false, 'message': "searver failed"}),
+        json.encode({'status': false, 'message': "server failed"}),
         500,
       );
     }
