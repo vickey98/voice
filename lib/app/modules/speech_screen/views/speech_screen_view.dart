@@ -86,18 +86,12 @@ class _SpeechScreenState extends State<SpeechScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: RippleAnimation(
-        duration: const Duration(seconds: 1),
         animate: _isListening,
         glowColor: Theme.of(context).primaryColor,
-        child: GestureDetector(
-          onLongPressStart: (_) => _startListening(),
-          onLongPressEnd: (_) => _stopListening(),
-          child: CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.deepPurple,
-            child: Icon(_isListening ? Icons.mic : Icons.mic_none,
-                size: 30, color: Colors.white),
-          ),
+        child: FloatingActionButton(
+          backgroundColor: Colors.deepPurple,
+          onPressed: _startListening,
+          child: Icon(_isListening ? Icons.mic : Icons.mic_none),
         ),
       ),
       body: SingleChildScrollView(
@@ -140,7 +134,6 @@ class _SpeechScreenState extends State<SpeechScreen> {
   }
 
   void _startListening() async {
-    debugPrint("started");
     if (!_isListening) {
       try {
         bool available = await _speech.initialize(
@@ -159,6 +152,9 @@ class _SpeechScreenState extends State<SpeechScreen> {
       } catch (error) {
         debugPrint('Could not initialize speech recognition: $error');
       }
+    } else {
+      _speech.stop();
+      setState(() => _isListening = false);
     }
   }
 
@@ -169,12 +165,5 @@ class _SpeechScreenState extends State<SpeechScreen> {
         _confidence = result.confidence;
       }
     });
-  }
-
-  void _stopListening() {
-    if (_isListening) {
-      _speech.stop();
-      setState(() => _isListening = false);
-    }
   }
 }
