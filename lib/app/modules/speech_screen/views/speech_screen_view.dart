@@ -94,6 +94,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
           onLongPressEnd: (_) => _stopListening(),
           child: CircleAvatar(
             radius: 30,
+            backgroundColor: Colors.deepPurple,
             child: Icon(_isListening ? Icons.mic : Icons.mic_none,
                 size: 30, color: Colors.white),
           ),
