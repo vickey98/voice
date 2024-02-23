@@ -22,6 +22,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
   double _confidence = 1.0;
   late final Future<List<stt.LocaleName>> locales;
   String lang = 'en-IN';
+  List<String> recognizedWordsList = [];
 
   @override
   void initState() {
@@ -42,8 +43,6 @@ class _SpeechScreenState extends State<SpeechScreen> {
       });
       print("After conversion: ${res.converted}");
     });
-    _speech.stop();
-    setState(() => _isListening = false);
   }
 
   KatakanaRequestModel getRequestModel(String text) {
@@ -154,15 +153,19 @@ class _SpeechScreenState extends State<SpeechScreen> {
       } catch (error) {
         debugPrint('Could not initialize speech recognition: $error');
       }
+    } else {
+      _speech.stop();
+      setState(() => _isListening = false);
     }
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
-    getkatakanaText(result.recognizedWords);
     setState(() {
       if (result.hasConfidenceRating && result.confidence > 0) {
         _confidence = result.confidence;
       }
+      recognizedWordsList.add(result.recognizedWords);
     });
+    getkatakanaText(result.recognizedWords);
   }
 }
