@@ -42,6 +42,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
       });
       print("After conversion: ${res.converted}");
     });
+    _speech.stop();
+    setState(() => _isListening = false);
   }
 
   KatakanaRequestModel getRequestModel(String text) {
@@ -152,9 +154,6 @@ class _SpeechScreenState extends State<SpeechScreen> {
       } catch (error) {
         debugPrint('Could not initialize speech recognition: $error');
       }
-    } else {
-      _speech.stop();
-      setState(() => _isListening = false);
     }
   }
 
