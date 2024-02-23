@@ -43,6 +43,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
       });
       print("After conversion: ${res.converted}");
     });
+    recognizedWordsList.clear();
   }
 
   KatakanaRequestModel getRequestModel(String text) {
@@ -166,6 +167,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
       }
       recognizedWordsList.add(result.recognizedWords);
     });
-    getkatakanaText(result.recognizedWords);
+    if (recognizedWordsList.isNotEmpty) {
+      getkatakanaText(recognizedWordsList.last);
+    }
   }
 }
