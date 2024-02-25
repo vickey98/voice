@@ -16,13 +16,12 @@ class SpeechScreen extends StatefulWidget {
 
 class _SpeechScreenState extends State<SpeechScreen> {
   ApiService api = Get.find();
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
-  String _text = "Press the button and start speaking";
-  double _confidence = 1.0;
+  final stt.SpeechToText _speech = stt.SpeechToText();
   late final Future<List<stt.LocaleName>> locales;
+  bool _isListening = false;
+  double _confidence = 1.0;
   String lang = 'en-IN';
-  List<String> recognizedWordsList = [];
+  String _text = "Press the button and start speaking";
 
   @override
   void initState() {
@@ -30,8 +29,12 @@ class _SpeechScreenState extends State<SpeechScreen> {
     _initSpeechState();
   }
 
-  void _initSpeechState() {
-    _speech = stt.SpeechToText();
+  void _initSpeechState() async {
+    await _speech.initialize(
+      onStatus: (status) => debugPrint("onStatus: $status"),
+      onError: (error) => debugPrint(
+          "onError: Could not initialize speech recognition: $error"),
+    );
     locales = _speech.locales();
   }
 
@@ -41,9 +44,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
       setState(() {
         _text = res.converted;
       });
-      print("After conversion: ${res.converted}");
+      debugPrint("After conversion: ${res.converted}");
     });
-    recognizedWordsList.clear();
   }
 
   KatakanaRequestModel getRequestModel(String text) {
@@ -93,6 +95,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
         child: FloatingActionButton(
           backgroundColor: Colors.deepPurple,
           onPressed: _startListening,
+          tooltip: 'Listen',
           child: Icon(_isListening ? Icons.mic : Icons.mic_none),
         ),
       ),
@@ -137,38 +140,29 @@ class _SpeechScreenState extends State<SpeechScreen> {
 
   void _startListening() async {
     if (!_isListening) {
-      try {
-        bool available = await _speech.initialize(
-          onStatus: (status) => debugPrint("onStatus: $status"),
-          onError: (error) => debugPrint("onError: $error"),
-        );
-
-        // If speech initialization was successful, start listening
-        if (available) {
-          _speech.listen(
-            localeId: lang,
-            onResult: _onSpeechResult,
-          );
-          setState(() => _isListening = true);
-        }
-      } catch (error) {
-        debugPrint('Could not initialize speech recognition: $error');
-      }
+      await _speech.listen(
+          localeId: lang,
+          onResult: _onSpeechResult,
+          listenOptions: stt.SpeechListenOptions(
+              cancelOnError: true,
+              autoPunctuation: true,
+              listenMode: stt.ListenMode.dictation,
+              onDevice: true));
+      setState(() => _isListening = true);
     } else {
-      _speech.stop();
+      await _speech.stop();
       setState(() => _isListening = false);
     }
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
+    if (result.recognizedWords != "") {
+      getkatakanaText(result.recognizedWords);
+    }
     setState(() {
       if (result.hasConfidenceRating && result.confidence > 0) {
         _confidence = result.confidence;
       }
-      recognizedWordsList.add(result.recognizedWords);
     });
-    if (recognizedWordsList.isNotEmpty) {
-      getkatakanaText(recognizedWordsList.last);
-    }
   }
 }
